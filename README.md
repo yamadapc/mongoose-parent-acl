@@ -1,5 +1,7 @@
-mongoose-acl
+mongoose-parent-acl
 ===
+
+Forked from https://github.com/scttnlsn/mongoose-acl
 
 Usage
 ---
