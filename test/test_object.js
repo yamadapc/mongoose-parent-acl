@@ -142,4 +142,30 @@ describe('Object', function() {
             done();
         });
     });
+
+    describe('when getting access that relates to a role', function() {
+        var access;
+        beforeEach(function() {
+            model.setAccess('role:owner', ['x', 'y', 'z', 'w']);
+            model.setAccess('subject:foo', ['role:owner', 'a']);
+            access = model.getAccess('subject:foo');
+        });
+
+        it('returns both the roles\' and the keys\' permissions', function() {
+            assert.deepEqual(access, ['x', 'y', 'z', 'w', 'a']);
+        });
+    });
+
+    describe('when getting access to a child and expanding roles', function() {
+        var access;
+        beforeEach(function() {
+            model.setParentAccess(parent_model, ['role:owner']);
+            model.setAccess('role:owner', ['h', 'i', 'j']);
+            access = parent_model.getChildAccess(model);
+        });
+
+        it('returns all the permissions the parent\'s leaked role has over the child', function() {
+            assert.deepEqual(access, ['h', 'i', 'j']);
+        });
+    });
 });
