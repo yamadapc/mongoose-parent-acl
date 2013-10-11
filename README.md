@@ -99,7 +99,7 @@ UserSchema.plugin(acl.subject, {
 Install
 ---
 
-    npm install mongoose-acl
+    npm install mongoose-parent-acl
     
 Tests
 ---
