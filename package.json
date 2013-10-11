@@ -7,7 +7,7 @@
     "main":         "./lib/index",
 
     "scripts": {
-        "test": "./node_modules/.bin/mocha"
+        "test": "./node_modules/.bin/mocha test/* -R spec"
     },
 
     "repository": {
