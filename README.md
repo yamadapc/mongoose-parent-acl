@@ -81,8 +81,8 @@ We can also specify additional ACL keys to which a subject has access.  For exam
 ```javascript
 UserSchema.plugin(acl.subject, {
     additionalKeys: function() {
-        return this.roles.map(function(role) {
-            return 'role:' + role;
+        return this.additional.map(function(key) {
+            return 'additional:' + key;
         });
     }
 });
