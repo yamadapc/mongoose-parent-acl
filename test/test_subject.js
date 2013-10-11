@@ -2,21 +2,22 @@ var assert = require('assert');
 var mongoose = require('mongoose');
 var sinon = require('sinon');
 var subject = require('../lib/subject');
+var acl = require('../lib');
 
 describe('Subject', function() {
     var model, Test;
 
     before(function() {
         var schema = new mongoose.Schema({
-            roles: [String]
+            additional: [String]
         });
 
         schema.plugin(subject, {
             public: '*',
 
             additionalKeys: function() {
-                return this.roles.map(function(role) {
-                    return 'role:' + role;
+                return this.additional.map(function(key) {
+                    return 'additional:' + key;
                 });
             }
         });
@@ -25,12 +26,12 @@ describe('Subject', function() {
     });
 
     beforeEach(function() {
-        model = new Test({ roles: ['foo', 'bar'] });
+        model = new Test({ additional: ['foo', 'bar'] });
     });
 
     it('returns access keys', function() {
         var keys = model.getAccessKeys();
-        assert.deepEqual(keys, ['subject:' + model._id, '*', 'role:foo', 'role:bar']);
+        assert.deepEqual(keys, ['subject:' + model._id, '*', 'additional:foo', 'additional:bar']);
     });
 
     describe('when getting access for entity', function() {
@@ -39,8 +40,8 @@ describe('Subject', function() {
         beforeEach(function() {
             var access = {
                 '*': ['a', 'b'],
-                'role:foo': ['a'],
-                'role:bar': ['c']
+                'additional:foo': ['a'],
+                'additional:bar': ['c']
             };
 
             entity = {
@@ -75,6 +76,36 @@ describe('Subject', function() {
 
             assert.equal(key, 'subject:' + model._id);
             assert.deepEqual(perms, ['a']);
+        });
+    });
+
+    describe('when dealing with roles for an entity', function() {
+        var subject, Entity, object, other_object;
+
+        before(function() {
+            // Create subject
+            subject = new Test();
+
+            // Define Entity
+            var EntitySchema = new mongoose.Schema({});
+            EntitySchema.plugin(acl.object);
+            Entity = mongoose.model('Entity', EntitySchema);
+            // Create accessible entity
+            object = new Entity();
+            object .setRole('owner', ['x', 'y', 'z']);
+            subject.setRoles(object,  ['owner']);
+
+            // Create inaccessible entity
+            other_object = new Entity();
+            other_object.setRole('owner', ['l', 'm', 'n']);
+        });
+
+        it('sets and returns all permissions of a subject\'s role', function() {
+            assert.deepEqual(subject.getAccess(object), ['x', 'y', 'z']);
+        });
+
+        it('and still considers that roles are object specific, not generic keys', function() {
+            assert.deepEqual(subject.getAccess(other_object), []);
         });
     });
 });
