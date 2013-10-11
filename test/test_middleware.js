@@ -46,7 +46,6 @@ describe('Middleware', function() {
         next();
       }
       function respond(req, res) {
-        console.log('got here');
         res.json(200, {congrats: 'Success'});
       }
       app.get('/post/:post_id', populate, middleware.hasPermissions('post', 'read'), respond);
