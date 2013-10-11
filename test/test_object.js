@@ -4,7 +4,7 @@ var sinon = require('sinon');
 var object = require('../lib/object');
 
 describe('Object', function() {
-    var model, Test;
+    var model, Test, parent_model, ParentTest;
 
     before(function() {
         var schema = new mongoose.Schema();
@@ -15,8 +15,21 @@ describe('Object', function() {
         Test = mongoose.model('test', schema);
     });
 
+    before(function() {
+        var schema = new mongoose.Schema();
+        schema.plugin(object, {
+            path: '_acl'
+        });
+
+        ParentTest = mongoose.model('parenttest', schema);
+    });
+
     beforeEach(function() {
         model = new Test();
+    });
+
+    beforeEach(function() {
+        parent_model = new ParentTest();
     });
 
     describe('when setting permissions', function() {
@@ -48,7 +61,7 @@ describe('Object', function() {
         it('creates $or query for all access keys and perms', function() {
             var find = sinon.spy(Test, 'find');
             var cursor = Test.withAccess(subject, ['baz', 'qux']);
-            
+
             assert.ok(find.calledOnce);
 
             var query = find.getCall(0).args[0];
@@ -99,6 +112,34 @@ describe('Object', function() {
             keys = model.keysWithAccess(['d']);
 
             assert.equal(keys.length, 0);
+        });
+    });
+
+    describe('when setting a parent\'s access', function() {
+        beforeEach(function() {
+            model.setParentAccess(parent_model, ['a', 'b']);
+        });
+
+        it('sets parent\'s permissions in acl', function() {
+            assert.deepEqual(model._acl['parent:'+parent_model._id], ['a', 'b']);
+            assert.deepEqual(model.getAccess('parent:'+parent_model._id), ['a', 'b']);
+        });
+
+        it('marks acl as modified', function() {
+            assert.ok(model.isModified('_acl'));
+        });
+    });
+
+    describe('when getting access to a child', function() {
+        var access;
+        beforeEach(function() {
+            model.setParentAccess(parent_model, ['a', 'b']);
+            access = parent_model.getChildAccess(model);
+        });
+
+        it('returns all the permissions the parent has over the child', function(done) {
+            assert.deepEqual(access, ['a', 'b']);
+            done();
         });
     });
 });
