@@ -159,8 +159,8 @@ describe('Object', function() {
     describe('when getting access to a child and expanding roles', function() {
         var access;
         beforeEach(function() {
-            model.setParentAccess(parent_model, ['role:owner']);
             model.setAccess('role:owner', ['h', 'i', 'j']);
+            model.setParentAccess(parent_model, ['role:owner']);
             access = parent_model.getChildAccess(model);
         });
 
