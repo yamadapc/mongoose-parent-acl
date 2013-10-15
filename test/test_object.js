@@ -48,7 +48,7 @@ describe('Object', function() {
     });
 
     describe('when getting permission cursor', function() {
-        var cursor, subject;
+        var find, cursor, subject;
 
         beforeEach(function() {
             subject = {
@@ -59,7 +59,7 @@ describe('Object', function() {
         });
 
         it('creates $or query for all access keys and perms', function() {
-            var find = sinon.spy(Test, 'find');
+            find = sinon.spy(Test, 'find');
             var cursor = Test.withAccess(subject, ['baz', 'qux']);
 
             assert.ok(find.calledOnce);
@@ -72,6 +72,27 @@ describe('Object', function() {
                     { '_acl.bar': { $all: ['baz', 'qux'] }}
                 ]
             });
+        });
+
+        it('creates $or query for all access keys and perms including those of the parent', function() {
+            var parent = {
+              _id: 'parent_id',
+              getAccess: function(/*subject*/) {
+                return ['baz', 'qux'];
+              }
+            };
+            var cursor = Test.withAccess(subject, ['baz', 'qux'], parent);
+
+            var query = find.getCall(1).args[0];
+
+            assert.deepEqual(query, {
+                $or: [
+                    { '_acl.foo': { $all: ['baz', 'qux'] }},
+                    { '_acl.bar': { $all: ['baz', 'qux'] }},
+                    { '_acl.parent:parent_id': { $all: ['baz', 'qux'] }}
+                 ]
+            });
+
         });
     });
 
