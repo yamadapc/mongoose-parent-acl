@@ -54,6 +54,9 @@ describe('Object', function() {
             subject = {
                 getAccessKeys: function() {
                     return ['foo', 'bar'];
+                },
+                getAccess: function(object) {
+                    return object.getAccess(/*key*/);
                 }
             };
         });
