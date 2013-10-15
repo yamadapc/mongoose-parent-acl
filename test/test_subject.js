@@ -108,4 +108,27 @@ describe('Subject', function() {
             assert.deepEqual(subject.getAccess(other_object), []);
         });
     });
+
+    describe('when dealing with an entity which has a parent', function() {
+        var subject, Entity, object, parent;
+
+        before(function() {
+            // Create subject
+            subject = new Test();
+
+            Entity = mongoose.model('Entity');
+
+            parent = new Entity();
+            object = new Entity();
+
+            object.setParentAccess(parent, ['write']);
+
+            subject.setAccess(object, ['read']);
+            subject.setAccess(parent, ['write']);
+        });
+
+        it('sets and returns all leaked permissions of a subject with the object', function() {
+            assert.deepEqual(subject.getAccess(object, parent), ['read', 'write']);
+        });
+    });
 });
