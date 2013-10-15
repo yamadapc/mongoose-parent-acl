@@ -33,9 +33,12 @@ describe('Middleware', function() {
       user = new User();
       posts = {
         'user_post' : new Post(),
-        'other_post': new Post()
+        'other_post': new Post(),
+        'parent_post': new Post()
       };
       user.setAccess(posts.user_post, ['read', 'write']);
+      user.setAccess(posts.parent_post, ['read']);
+      posts.other_post.setParentAccess(posts.parent_post, ['read']);
     });
 
     // Register route
@@ -68,23 +71,49 @@ describe('Middleware', function() {
     before(function() {
       function populate(req, res, next) {
         req.user = user;
-        req.post = other_post;
+        req.post = posts[req.params.post_id];
         next();
       }
       function respond(req, res) {
         res.json(200, {congrats: 'Success'});
       }
-      app.get('/post/:post_id', populate, middleware.hasPermissions('post', 'read'), respond);
+      app.get('/other_post/:post_id', populate, middleware.hasPermissions('post', 'read'), respond);
     });
 
     describe('when a user doesn\'t have access to the resource', function() {
       it('should respond with Unauthorized', function(done) {
         request(app)
-          .get('/post/'+'other_post')
+          .get('/other_post/'+'other_post')
           .expect(401)
           .end(function(err, res) {
             assert.ifError(err);
             assert.deepEqual(res.body, {error: 'Unauthorized'});
+            done();
+          });
+      });
+    });
+
+    before(function() {
+      function populate(req, res, next) {
+        req.user = user;
+        req.post = posts[req.params.post_id];
+        req.parent = posts.parent_post;
+        next();
+      }
+      function respond(req, res) {
+        res.json(200, {congrats: 'Success'});
+      }
+      app.get('/parent_post/:post_id', populate, middleware.hasPermissions('post', ['read'], {parent_path: 'parent'}), respond);
+    });
+
+    describe('when a user has access to a parent which has access to the resource', function() {
+      it('should respond successfully', function(done) {
+        request(app)
+          .get('/parent_post/'+'other_post')
+          .expect(200)
+          .end(function(err, res) {
+            assert.ifError(err);
+            assert.deepEqual(res.body, {congrats: 'Success'});
             done();
           });
       });
