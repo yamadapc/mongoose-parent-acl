@@ -16,7 +16,7 @@
     },
 
     "dependencies": {
-        "underscore": "latest"
+        "underscore": "1.5.2"
     },
 
     "devDependencies": {
