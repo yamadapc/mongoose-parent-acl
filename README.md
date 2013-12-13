@@ -1,4 +1,4 @@
-mongoose-parent-acl
+mongoose-parent-acl [![Build Status](https://travis-ci.org/yamadapc/mongoose-parent-acl.png?branch=master)](https://travis-ci.org/yamadapc/mongoose-parent-acl)
 ===
 
 Forked from https://github.com/scttnlsn/mongoose-acl
