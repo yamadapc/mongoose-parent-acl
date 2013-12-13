@@ -131,4 +131,32 @@ describe('Subject', function() {
             assert.deepEqual(subject.getAccess(object, parent), ['read', 'write']);
         });
     });
+
+    describe('when dealing with an entity which has multiple parents', function() {
+        var subject, Entity, object, parents;
+
+        before(function() {
+            // Create subject
+            subject = new Test();
+
+            Entity = mongoose.model('Entity');
+
+            var parent1 = new Entity();
+            var parent2 = new Entity();
+            parents = [parent1, parent2];
+
+            object = new Entity();
+
+            object.setParentAccess(parent1, [ 'write' ]);
+            object.setParentAccess(parent2, [ 'destroy' ]);
+
+            subject.setAccess(object, ['read']);
+            subject.setAccess(parent1, ['write']);
+            subject.setAccess(parent2, ['destroy', 'update']);
+        });
+
+        it('sets and returns all leaked permissions of a subject with the object', function() {
+            assert.deepEqual(subject.getAccess(object, parents), ['read', 'write', 'destroy']);
+        });
+    });
 });
