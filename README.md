@@ -19,7 +19,8 @@ UserSchema.plugin(acl.subject);
     
 Methods
 ---
-The plugin adds accessor methods to the object for getting and setting permissions of a particular key:
+The plugin adds accessor methods to the object for getting and setting
+permissions of a particular key:
 
 ```javascript
 var widget = new Widget({ … });
@@ -34,7 +35,8 @@ Or getting all keys with given permissions:
 widget.keysWithAccess(['a']); // => ['foo']
 ```
     
-There are also convenience methods added to the subject for getting and setting the permissions for a given object:
+There are also convenience methods added to the subject for getting and setting
+the permissions for a given object:
 
 ```javascript
 var user = …;
@@ -56,7 +58,8 @@ Options
 
 ### Object
 
-We can specify the path in which the ACL will be stored (by default it will be available at `_acl`):
+We can specify the path in which the ACL will be stored (by default it will be
+available at `_acl`):
 
 ```javascript
 WidgetSchema.plugin(acl.object, {
@@ -66,7 +69,9 @@ WidgetSchema.plugin(acl.object, {
     
 ### Subject
 
-Each subject is referred to in an ACL by a unique key (by default it is of the form `subject:<subject _id>`).  This can be customized by specifying a `key` option:
+Each subject is referred to in an ACL by a unique key (by default it is of the
+form `subject:<subject _id>`).  This can be customized by specifying a `key`
+option:
 
 ```javascript
 UserSchema.plugin(acl.subject, {
@@ -76,7 +81,8 @@ UserSchema.plugin(acl.subject, {
 });
 ```
     
-We can also specify additional ACL keys to which a subject has access.  For example, suppose a user optionally belongs to a number of roles:
+We can also specify additional ACL keys to which a subject has access.  For
+example, suppose a user optionally belongs to a number of roles:
 
 ```javascript
 UserSchema.plugin(acl.subject, {
@@ -88,7 +94,8 @@ UserSchema.plugin(acl.subject, {
 });
 ```
     
-There is one special key referred to as the public key.  If set, the associated permissions will apply to all subjects:
+There is one special key referred to as the public key.  If set, the associated
+permissions will apply to all subjects:
 
 ```javascript
 UserSchema.plugin(acl.subject, {
