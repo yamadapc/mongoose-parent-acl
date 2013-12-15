@@ -8,7 +8,7 @@ Usage
 
 ```javascript
 var mongoose = require('mongoose');
-var acl = require('mongoose-acl');
+var acl = require('mongoose-parent-acl');
 
 var WidgetSchema = new mongoose.Schema({ … });
 WidgetSchema.plugin(acl.object);
@@ -17,6 +17,7 @@ var UserSchema = new mongoose.Schema({ … });
 UserSchema.plugin(acl.subject);
 ```
     
+
 Methods
 ---
 The plugin adds accessor methods to the object for getting and setting
