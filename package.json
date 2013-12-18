@@ -1,6 +1,6 @@
 {
     "name":         "mongoose-parent-acl",
-    "version":      "0.3.0",
+    "version":      "0.3.1",
     "description":  "Mongoose Parent ACL: a tiny fork of Scott Nelson's mongoose-acl, with some extra features",
     "author":       "Pedro Tacla Yamada <tacla.yamada@gmail.com>",
     "contributors": ["Scott Nelson <scott@scttnlsn.com>", "Joshua Gross <josh@spandex.io>"],
