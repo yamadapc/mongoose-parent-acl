@@ -97,6 +97,36 @@ describe('Object', function() {
             });
 
         });
+
+        it('creates $or query for all access keys and perms including those of all the parents', function() {
+            var parent1 = {
+              _id: 'parent1_id',
+              getAccess: function(/*subject*/) {
+                return ['baz', 'qux'];
+              }
+            };
+
+            var parent2 = {
+              _id: 'parent2_id',
+              getAccess: function(/*subject*/) {
+                return ['tes', 'ble'];
+              }
+            };
+
+            var cursor = Test.withAccess(subject, ['baz', 'qux'], [parent1, parent2]);
+
+            var query = find.getCall(2).args[0];
+
+            assert.deepEqual(query, {
+                $or: [
+                    { '_acl.foo': { $all: ['baz', 'qux'] }},
+                    { '_acl.bar': { $all: ['baz', 'qux'] }},
+                    { '_acl.parent:parent1_id': { $all: ['baz', 'qux'] }},
+                    { '_acl.parent:parent2_id': { $all: ['baz', 'qux'] }}
+                 ]
+            });
+
+        });
     });
 
     describe('when getting keys with given permissions', function() {
