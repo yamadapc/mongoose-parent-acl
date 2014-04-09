@@ -98,7 +98,7 @@ describe('Object', function() {
 
         });
 
-        it('creates $or query for all access keys and perms including those of all the parents', function() {
+        it('creates $or query for all access keys and perms including those of all the relevant parents', function() {
             var parent1 = {
               _id: 'parent1_id',
               getAccess: function(/*subject*/) {
@@ -113,16 +113,23 @@ describe('Object', function() {
               }
             };
 
-            var cursor = Test.withAccess(subject, ['baz', 'qux'], [parent1, parent2]);
+            var parent3 = {
+              _id: 'parent3_id',
+              getAccess: function(/*subject*/) {
+                return ['baz', 'ble'];
+              }
+            };
+
+            var cursor = Test.withAccess(subject, ['baz'], [parent1, parent2, parent3]);
 
             var query = find.getCall(2).args[0];
 
             assert.deepEqual(query, {
                 $or: [
-                    { '_acl.foo': { $all: ['baz', 'qux'] }},
-                    { '_acl.bar': { $all: ['baz', 'qux'] }},
-                    { '_acl.parent:parent1_id': { $all: ['baz', 'qux'] }},
-                    { '_acl.parent:parent2_id': { $all: ['baz', 'qux'] }}
+                    { '_acl.foo': { $all: ['baz'] }},
+                    { '_acl.bar': { $all: ['baz'] }},
+                    { '_acl.parent:parent1_id': { $all: ['baz'] }},
+                    { '_acl.parent:parent3_id': { $all: ['baz'] }}
                  ]
             });
 
